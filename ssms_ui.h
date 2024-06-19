@@ -23,8 +23,8 @@ public:
 private:
     Ui::SSMS_UI *ui;
 
-public slots:
-    static void on_selling_searchButton_clicked();
+private slots:
+//    static void on_selling_searchButton_clicked();
 };
 
 
