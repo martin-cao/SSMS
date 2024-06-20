@@ -17,6 +17,4 @@ SSMS_UI::~SSMS_UI() {
     delete ui;
 }
 
-//void SSMS_UI::on_selling_searchButton_clicked() {
-//    QMessageBox::warning(nullptr, "", "Test Warning");
-//}
+

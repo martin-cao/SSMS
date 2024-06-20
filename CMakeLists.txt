@@ -12,16 +12,20 @@ find_package(Qt6 COMPONENTS
         Core
         Gui
         Widgets
+        Sql
         REQUIRED)
 
 add_executable(SSMS
         main.cpp
         ssms_ui.cpp
+        Goods.cpp
+        Goods.h
 )
 
 target_link_libraries(SSMS
         Qt::Core
         Qt::Gui
         Qt::Widgets
+        Qt::Sql
 )
 

@@ -24,7 +24,7 @@ private:
     Ui::SSMS_UI *ui;
 
 private slots:
-//    static void on_selling_searchButton_clicked();
+
 };
 
 
