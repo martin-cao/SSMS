@@ -4,11 +4,14 @@
 
 #include "Goods.h"
 
+#include <iostream>
+
 namespace SSMS {
 
     // Constructor
     Goods::Goods() {
         m_SSMS_isSelected = false;
+        std::cout << "[SSMS_SYSTEM] class Goods member constructed" << std::endl;
     }
 
     // region Inquiring functions

@@ -5,6 +5,10 @@
 #ifndef SSMS_SSMS_UI_H
 #define SSMS_SSMS_UI_H
 
+#pragma once
+
+#include "system.h"
+
 #include <QMainWindow>
 
 
