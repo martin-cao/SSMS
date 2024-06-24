@@ -22,8 +22,10 @@ add_executable(SSMS
         Goods.h
         User.cpp
         User.h
-        system.h
         system.cpp
+        system.h
+        Transactions.cpp
+        Transactions.h
 )
 
 target_link_libraries(SSMS

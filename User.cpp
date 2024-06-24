@@ -41,12 +41,14 @@ namespace SSMS {
 
     // Operating function
     int User::login(QString f_username, QString f_pwd) {
-        QSqlQuery query;
-        query.prepare("SELECT * FROM users WHERE user_name = :userName AND user_pwd = :pwd"); // TODO 密码 + SHA256
-        query.bindValue(":userName", f_username);
-        query.bindValue(":pwd", f_pwd);
-        query.exec();
+        // Generate the SHA256 hash of the password
+        QByteArray pwdHash = QCryptographicHash::hash(f_pwd.toUtf8(), QCryptographicHash::Sha256).toHex();
 
+        QSqlQuery query;
+        query.prepare("SELECT * FROM users WHERE user_name = :userName AND user_pwd = :pwd");
+        query.bindValue(":userName", f_username);
+        query.bindValue(":pwd", pwdHash);
+        query.exec();
         if (query.next()) {
             m_userName = query.value("user_name").toString();
             m_userRole = query.value("user_role").toInt();

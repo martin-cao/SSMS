@@ -6,3 +6,4 @@
 
 SSMS::User user;
 SSMS::Goods good;
+SSMS::Transactions transaction(QDateTime::currentDateTime());

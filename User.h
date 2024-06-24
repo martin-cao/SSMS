@@ -18,6 +18,8 @@
 #include <QSqlTableModel>
 #include <QTableView>
 
+#include <QCryptographicHash>
+
 #include <QDebug>
 
 namespace SSMS {
