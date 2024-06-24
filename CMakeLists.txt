@@ -18,6 +18,7 @@ find_package(Qt6 COMPONENTS
 add_executable(SSMS
         main.cpp
         ssms_ui.cpp
+        ssms_ui.ui
         Goods.cpp
         Goods.h
         User.cpp
@@ -26,6 +27,8 @@ add_executable(SSMS
         system.h
         Transactions.cpp
         Transactions.h
+        data.qrc
+        config.h
 )
 
 target_link_libraries(SSMS

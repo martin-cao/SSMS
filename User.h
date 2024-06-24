@@ -26,9 +26,9 @@ namespace SSMS {
 
     class User {
     private:
-        QString m_userName;
-        int m_userRole;
-        int m_uid;
+        QString m_userName = "";
+        int m_userRole = 0;
+        int m_uid = 0;
         /* userRole
          * 1 - admin
          * 2 - manager
@@ -48,6 +48,7 @@ namespace SSMS {
 
         // Operating function
         int login(QString f_username, QString f_pwd);
+        void logOut();
 
     };
 

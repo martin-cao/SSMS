@@ -41,6 +41,75 @@ private:
     QSqlTableModel *queryTable = new QSqlTableModel;
 
 private slots:
+    // Slots
+
+// Login and Log out
+    /*
+    lineEdit_login_username
+    lineEdit_login_password
+    */
+    void on_button_login_clicked();
+    void on_button_logOut_clicked();
+
+    // Main view
+
+    // Reset transaction instance
+    void on_tabWidget_currentChanged();
+
+    // Selling tab
+    /*
+    comboBox_selling_searchBy
+    lineEdit_selling_search
+    tableView_selling_search
+
+    spinBox_selling_quantity
+    textBrowser_selling_summary
+    */
+
+    void on_button_selling_search_clicked();
+    void on_button_selling_add_clicked();
+    void on_button_selling_checkOut_clicked();
+
+    // Stock tab
+    /*
+    comboBox_stock_searchBy
+    lineEdit_stock_search
+    tableView_stock_search
+
+    lineEdit_stock_add_id
+    lineEdit_stock_add_name
+    comboBox_stock_add_type
+    lineEdit_stock_add_brand
+    comboBox_stock_add_specs
+    lineEdit_stock_add_code
+    */
+    void on_button_stock_search_clicked();
+    void on_button_stock_add_add_clicked();
+    void on_button_stock_edit_confirm_clicked();
+    void on_button_stock_delete_delete_clicked();
+
+    // Refund tab
+    /*
+    calendar_refund_date
+    tableView_refund_transactions
+    lineEdit_refund_transactionID
+    checkBox_refund_manualInput
+    tableView_refund_transactionDetail
+
+    */
+    void on_button_refund_search_clicked();
+    void on_button_refund_refund_clicked();
+
+    // Stats tab
+    /*
+    comboBox_stats_statisticsBy
+    tableView_stats_table
+    */
+    void on_comboBox_stats_statisticsBy_currentIndexChanged();
+
+    // User tab
+    void on_button_user_switchToPersonalMode_clicked();
+    void on_button_user_switchToAdminMode_clicked();
 
 };
 

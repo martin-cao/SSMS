@@ -30,6 +30,8 @@
 #include <QTableView>
 #include <QMessageBox>
 
+#include <QDebug>
+
 
 extern SSMS::User user;
 extern SSMS::Goods good;

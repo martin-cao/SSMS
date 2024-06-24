@@ -68,6 +68,7 @@ namespace SSMS {
         m_totalPrice = 0;
         m_transactionTime = QDateTime();
         m_SSMS_isSelected = false;
+        qDebug() << "[SSMS_SYSTEM] Transaction reset";
     }
 
     void Transactions::select(int f_transaction_id) {
