@@ -8,6 +8,7 @@
 #include <QApplication>
 #include <QtSql/QSqlDatabase>
 #include <QFile>
+#include <QStandardPaths>
 #include <QDir>
 
 
@@ -29,14 +30,10 @@ int main(int argc, char *argv[]) {
     db.setDatabaseName(dbPath);
 
     // Copy the database file from the resource to the AppDataLocation directory
-//    if (!QFile::exists(dbPath)) {
-//        QFile::copy(":/data.db", dbPath);
-//        QFile::setPermissions(dbPath, QFile::ReadUser | QFile::WriteUser);
-//    }
-
     if (!QFile::exists(dbPath) || resetDB) {
         QFile file(":/data.db");
         qDebug() << "Resource file path: " << QFileInfo(file).absoluteFilePath();
+
 
         if (resetDB && QFile::exists(dbPath)) {
             // If resetDB is true and the target file exists, remove the target file first
@@ -44,15 +41,19 @@ int main(int argc, char *argv[]) {
         }
 
         if (!file.copy(dbPath)) {
-//            qDebug() << "Failed to copy database file: " << file.errorString();
-        } else if (!file.setPermissions(QFile::ReadUser | QFile::WriteUser)) {
-//            qDebug() << "Failed to set permissions: " << file.errorString();
+            qDebug() << "Failed to copy database file: " << file.errorString();
         } else {
             qDebug() << "Copy succeed";
+            // Set the correct permissions after copying
+            QFile::setPermissions(dbPath, QFile::ReadOwner | QFile::WriteOwner);
         }
+        qDebug() << "Permissions: " << QFile::permissions(dbPath);
     }
 
-    db.open();
+    if (!db.open()) {
+        qDebug() << "Failed to open database: " << db.lastError().text();
+        return -1;
+    }
 
     Q_INIT_RESOURCE(data);  // Initialize the resource
 

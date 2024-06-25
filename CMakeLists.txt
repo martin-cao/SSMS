@@ -6,6 +6,8 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
+set(CMAKE_VERBOSE_MAKEFILE ON)
+
 set(CMAKE_PREFIX_PATH "/Users/martincao/Qt/6.6.2/macos/lib/cmake")
 
 find_package(Qt6 COMPONENTS
@@ -13,6 +15,7 @@ find_package(Qt6 COMPONENTS
         Gui
         Widgets
         Sql
+        PrintSupport
         REQUIRED)
 
 add_executable(SSMS
@@ -36,5 +39,6 @@ target_link_libraries(SSMS
         Qt::Gui
         Qt::Widgets
         Qt::Sql
+        Qt::PrintSupport
 )
 

@@ -6,6 +6,9 @@
 
 #include "ssms_ui.h"
 #include <QMessageBox>
+#include <QtPrintSupport/QPrinter>
+#include <QtPrintSupport/QPrintDialog>
+
 
 // Constructor and Deconstructor
 SSMS_UI::SSMS_UI(QWidget *parent) :
@@ -38,12 +41,14 @@ void SSMS_UI::refreshSellingSummary() {
 //        qDebug() << "Good name: " << goodName;
         int qty = item.m_qty;
         double discount = item.m_good.get_goodDiscount();
+        double unitPrice = item.m_unitPrice;
         double itemTotalPrice = item.m_unitPrice * qty;
 
-        display += QString("Name: %1, Qty: %2, Discount: %3\n")
+        display += QString("Name: %1, Qty: %2, Discount: %3, Unit Price: %4\n")
                 .arg(goodName)
                 .arg(qty)
-                .arg(discount);
+                .arg(discount)
+                .arg(unitPrice);
     }
 
     totalPrice = transaction.get_totalPrice();
@@ -164,6 +169,7 @@ void SSMS_UI::on_button_selling_add_clicked() {
     int goodQty = ui->spinBox_selling_quantity->value();
 
     transaction.addItem(good, goodQty);
+    transaction.calcTotalPrice();
     refreshSellingSummary();
 }
 
@@ -173,7 +179,92 @@ void SSMS_UI::on_button_selling_reset_clicked() {
 }
 
 void SSMS_UI::on_button_selling_checkOut_clicked() {
+    qDebug() << "on_button_selling_checkOut_clicked() started.";
 
+    if (transaction.get_itemList().empty()) {
+        QMessageBox::warning(this, "Checkout Error", "The shopping cart is empty.");
+        return;
+    }
+
+    QString dateStr = QDateTime::currentDateTime().toString("yyyy/MM/dd hh:mm:ss");
+
+    // Create a new transaction record
+    QSqlQuery query;
+    query.prepare("INSERT INTO transactions (transaction_time, transaction_uid) VALUES (:transactionTime, :transactionUid)");
+    query.bindValue(":transactionTime", dateStr);
+    query.bindValue(":transactionUid", user.get_uid());
+
+    qDebug() << "on_button_selling_checkOut_clicked() finished.";
+    if (!query.exec()) {
+        qDebug() << "Query execution failed: " << query.lastError();
+        QSqlDatabase::database().rollback();
+        QMessageBox::warning(this, "Checkout Error", "Failed to create a new transaction record.");
+        return;
+    }
+
+    // Get the generated transaction id
+    QVariant transactionID = query.lastInsertId();
+
+    // Create transaction detail records for each item in the shopping cart
+    for (auto& item : transaction.get_itemList()) {
+        query.prepare("INSERT INTO transaction_details (transaction_id, good_id, good_qty, good_discount, good_unitPrice) VALUES (:transactionId, :goodId, :goodQty, :goodDiscount, :goodUnitPrice)");
+        query.bindValue(":transactionId", transactionID);
+        query.bindValue(":goodId", item.m_good.get_goodID());
+        query.bindValue(":goodQty", item.m_qty);
+        query.bindValue(":goodDiscount", item.m_good.get_goodDiscount());
+        query.bindValue(":goodUnitPrice", item.m_unitPrice);
+
+        if (!query.exec()) {
+            QSqlDatabase::database().rollback();
+            QMessageBox::warning(this, "Checkout Error", "Failed to create a new transaction detail record.");
+            return;
+        }
+
+        // Update the stock quantity of the good
+        int newStockQty = item.m_good.get_goodStockQty() - item.m_qty;
+        item.m_good.setStock(newStockQty);
+    }
+
+
+    // Print the receipt
+    QString printContent = "";
+    printContent += "---------- XX Supermarket ----------\n";
+    printContent += "Transaction date: " + dateStr + "\n";
+    printContent += "Transaction ID: " + transactionID.toString() + "\n";
+    printContent += "Operator: " + QString::number(user.get_uid()) + "\n";
+    printContent += "--------- Purchase Contents --------\n";
+
+    // Add each item in the shopping cart to the receipt
+    for (auto& item : transaction.get_itemList()) {
+        printContent += "Good ID: " + item.m_good.get_goodID() + "\n";
+        printContent += "Good Name: " + item.m_good.get_goodName() + "\n";
+        printContent += "Quantity: " + QString::number(item.m_qty) + "\n";
+        printContent += "Unit Price: " + QString::number(item.m_unitPrice) + "\n";
+        printContent += "Discount: " + QString::number(item.m_good.get_goodDiscount()) + "\n";
+        printContent += "Total Price: " + QString::number(item.m_unitPrice * item.m_qty) + "\n";
+        printContent += "------------------------------------\n";
+    }
+
+    printContent += "Total Price: " + QString::number(transaction.get_totalPrice()) + "\n";
+
+    printContent += "------------------------------------\n";
+    printContent += "Please keep the return and exchange credentials properly.\n";
+    printContent += "";
+
+    ui->textBrowser_selling_summary->setText(printContent);
+
+    QPrinter printer;
+    QPrintDialog printDialog(&printer, this);
+
+    if (printDialog.exec() == QPrintDialog::Accepted)
+        ui->textBrowser_selling_summary->print(&printer);
+
+
+    // Reset the shopping cart
+    ui->textBrowser_selling_summary->clear();
+    transaction.reset();
+
+    qDebug() << "on_button_selling_checkOut_clicked() finished.";
 }
 // endregion
 
