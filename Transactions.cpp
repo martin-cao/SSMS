@@ -19,6 +19,10 @@ namespace SSMS {
         return m_totalPrice;
     }
 
+    double Transactions::get_profit() {
+        return m_profit;
+    }
+
     bool Transactions::isSelected(bool f_msg) {
         if (m_SSMS_isSelected)
             return true;
@@ -70,12 +74,21 @@ namespace SSMS {
             m_totalPrice += item.m_unitPrice * (1 - item.m_good.get_goodDiscount()) * item.m_qty;
         }
     }
+
+    void Transactions::calcProfit() {
+        m_profit = 0;
+        for (auto& item : m_itemList) {
+            double profitPerItem = (item.m_unitPrice * (1 - item.m_good.get_goodDiscount()) - item.m_good.get_goodPurchasePrice()) * item.m_qty;
+            m_profit += profitPerItem;
+        }
+    }
     // endregion
 
     // region System functions
     void Transactions::reset() {
         m_itemList.clear();
         m_totalPrice = 0;
+        m_profit = 0;
         m_transactionTime = QDateTime();
         m_SSMS_isSelected = false;
         qDebug() << "[SSMS_SYSTEM] Transaction reset";

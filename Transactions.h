@@ -40,18 +40,20 @@ namespace SSMS {
         std::vector<TransactionItem> m_itemList;
         QDateTime m_transactionTime;
         double m_totalPrice;
+        double m_profit;
 
         // SSMS Parameter
         bool m_SSMS_isSelected;
 
     public:
         // Constructor
-        Transactions(const QDateTime& f_transactionTime) : m_transactionTime(f_transactionTime), m_totalPrice(0), m_SSMS_isSelected(false) {}
+        Transactions(const QDateTime& f_transactionTime) : m_transactionTime(f_transactionTime), m_totalPrice(0), m_profit(0), m_SSMS_isSelected(false) {}
 
         // Inquiring functions
         std::vector<TransactionItem> get_itemList();
         QDateTime get_transactionTime();
         double get_totalPrice();
+        double get_profit();
         bool isSelected(bool f_msg = true);
 
         // Operationg functions
@@ -59,6 +61,7 @@ namespace SSMS {
         void removeItem(std::string f_goodID);
         void modifyQty(std::string f_goodID, int f_qty);
         void calcTotalPrice();
+        void calcProfit();
 
         // System functions
         void reset();

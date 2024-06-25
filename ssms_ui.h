@@ -100,6 +100,10 @@ private slots:
     tableView_refund_transactionDetail
 
     */
+    void on_calendar_refund_date_selectionChanged();
+    void on_tableView_refund_transactions_clicked(const QModelIndex& index);
+    void on_lineEdit_refund_transactionID_textChanged();
+    void on_checkBox_refund_manualInput_stateChanged();
     void on_button_refund_search_clicked();
     void on_button_refund_refund_clicked();
 

@@ -112,7 +112,7 @@
            <bool>true</bool>
           </property>
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
           <property name="movable">
            <bool>false</bool>
@@ -415,7 +415,7 @@
                  <x>0</x>
                  <y>0</y>
                  <width>200</width>
-                 <height>415</height>
+                 <height>428</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -672,7 +672,14 @@ li.checked::marker { content: &quot;\2612&quot;; }
                </widget>
               </item>
               <item>
-               <widget class="QTableView" name="tableView_refund_transactions"/>
+               <widget class="QTableView" name="tableView_refund_transactions">
+                <property name="selectionMode">
+                 <enum>QAbstractItemView::ExtendedSelection</enum>
+                </property>
+                <property name="selectionBehavior">
+                 <enum>QAbstractItemView::SelectRows</enum>
+                </property>
+               </widget>
               </item>
              </layout>
             </item>
@@ -707,6 +714,9 @@ li.checked::marker { content: &quot;\2612&quot;; }
                     <height>16777215</height>
                    </size>
                   </property>
+                  <property name="readOnly">
+                   <bool>true</bool>
+                  </property>
                  </widget>
                 </item>
                </layout>
@@ -734,7 +744,11 @@ li.checked::marker { content: &quot;\2612&quot;; }
             <item row="1" column="1">
              <layout class="QHBoxLayout" name="horizontalLayout_6">
               <item>
-               <widget class="QTableView" name="tableView_refund_transactionDetail"/>
+               <widget class="QTableView" name="tableView_refund_transactionDetail">
+                <property name="selectionBehavior">
+                 <enum>QAbstractItemView::SelectRows</enum>
+                </property>
+               </widget>
               </item>
               <item>
                <widget class="QPushButton" name="button_refund_refund">
@@ -1229,7 +1243,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
      <x>0</x>
      <y>0</y>
      <width>887</width>
-     <height>37</height>
+     <height>24</height>
     </rect>
    </property>
   </widget>

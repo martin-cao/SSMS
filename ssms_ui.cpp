@@ -103,6 +103,9 @@ void SSMS_UI::on_tabWidget_currentChanged() {
         case 2:
             qDebug() << "[SSMS_SYSTEM_VIEW] Turned to tab Refund";
             transaction.reset();
+            on_calendar_refund_date_selectionChanged();
+            ui->tableView_refund_transactionDetail->setSelectionMode(QAbstractItemView::NoSelection);
+            ui->tableView_refund_transactionDetail->setEditTriggers(QAbstractItemView::NoEditTriggers);
             break;
         case 3:
             qDebug() << "[SSMS_SYSTEM_VIEW] Turned to tab Stats";
@@ -173,6 +176,7 @@ void SSMS_UI::on_button_selling_add_clicked() {
 
     transaction.addItem(good, goodQty);
     transaction.calcTotalPrice();
+    transaction.calcProfit();
     refreshSellingSummary();
 }
 
@@ -189,13 +193,20 @@ void SSMS_UI::on_button_selling_checkOut_clicked() {
         return;
     }
 
+    // Calculate the total price and profit after all items are added
+    transaction.calcTotalPrice();
+    transaction.calcProfit();
+
     QString dateStr = QDateTime::currentDateTime().toString("yyyy/MM/dd hh:mm:ss");
 
     // Create a new transaction record
     QSqlQuery query;
-    query.prepare("INSERT INTO transactions (transaction_time, transaction_uid) VALUES (:transactionTime, :transactionUid)");
+    query.prepare("INSERT INTO transactions (transaction_time, transaction_uid, transaction_totalPrice, transaction_profit, transaction_status) VALUES (:transactionTime, :transactionUid, :transactionTotalPrice, :transactionProfit, :transactionStatus)");
     query.bindValue(":transactionTime", dateStr);
     query.bindValue(":transactionUid", user.get_uid());
+    query.bindValue(":transactionTotalPrice", transaction.get_totalPrice());
+    query.bindValue(":transactionProfit", transaction.get_profit());
+    query.bindValue(":transactionStatus", "done");
 
     qDebug() << "on_button_selling_checkOut_clicked() finished.";
     if (!query.exec()) {
@@ -227,7 +238,6 @@ void SSMS_UI::on_button_selling_checkOut_clicked() {
         int newStockQty = item.m_good.get_goodStockQty() - item.m_qty;
         item.m_good.setStock(newStockQty);
     }
-
 
     // Print the receipt
     QString printContent = "";
@@ -457,12 +467,133 @@ checkBox_refund_manualInput
 tableView_refund_transactionDetail
 
 */
-void SSMS_UI::on_button_refund_search_clicked() {
 
+void SSMS_UI::on_calendar_refund_date_selectionChanged() {
+    QString date = ui->calendar_refund_date->selectedDate().toString("yyyy/MM/dd");
+
+    QSqlTableModel* model = new QSqlTableModel;
+    model->setTable("transactions");
+    model->setFilter(QString("transaction_time LIKE '%%1%'").arg(date));
+    model->select();
+
+    ui->tableView_refund_transactions->setModel(model);
+    ui->tableView_refund_transactions->resizeColumnsToContents();
+    ui->tableView_refund_transactions->show();
+}
+
+void SSMS_UI::on_tableView_refund_transactions_clicked(const QModelIndex& index) {
+    int row = index.row();
+
+    QModelIndex idIndex = ui->tableView_refund_transactions->model()->index(row, 0);
+    QString transactionID = ui->tableView_refund_transactions->model()->data(idIndex).toString();
+
+    ui->lineEdit_refund_transactionID->setText(transactionID);
+}
+
+void SSMS_UI::on_lineEdit_refund_transactionID_textChanged() {
+    if (ui->checkBox_refund_manualInput->isChecked()) {
+        return;
+    }
+    on_button_refund_search_clicked();
+}
+
+void SSMS_UI::on_checkBox_refund_manualInput_stateChanged() {
+    if (ui->checkBox_refund_manualInput->isChecked()) {
+        // If the checkbox is checked, make the line edit editable
+        ui->lineEdit_refund_transactionID->setReadOnly(false);
+    } else {
+        // If the checkbox is not checked, make the line edit read-only
+        ui->lineEdit_refund_transactionID->setReadOnly(true);
+    }
+}
+
+void SSMS_UI::on_button_refund_search_clicked() {
+    QString transactionID = ui->lineEdit_refund_transactionID->text();
+
+    // Check whether the record is existed and whether the status is "done"
+    QSqlQuery queryCheck;
+    queryCheck.prepare("SELECT * FROM transactions WHERE transaction_id = :transactionID");
+    queryCheck.bindValue(":transactionID", transactionID);
+    queryCheck.exec();
+
+    if (!queryCheck.next()) {
+        ui->tableView_refund_transactionDetail->setModel(new QSqlQueryModel());
+        QMessageBox::warning(nullptr, "Search failed", "No record is found.");
+        return;
+    } else if (queryCheck.value("transaction_status").toString() != "done") {
+        ui->tableView_refund_transactionDetail->setModel(new QSqlQueryModel());
+        QMessageBox::warning(nullptr, "Search failed", "This transaction is already refunded.");
+        return;
+    }
+
+    QSqlQuery query;
+    QString queryStr = QString("SELECT transaction_details.good_id, goods.good_name, transaction_details.good_qty, transaction_details.good_unitPrice*transaction_details.good_qty AS totalAmount FROM transaction_details, goods WHERE transaction_details.good_id = goods.good_id AND transaction_details.transaction_id = :transactionID");
+    query.prepare(queryStr);
+    query.bindValue(":transactionID", transactionID);
+    query.exec();
+
+    QSqlQueryModel* model = new QSqlQueryModel;
+    model->setQuery(std::move(query));
+    ui->tableView_refund_transactionDetail->setModel(model);
+    ui->tableView_refund_transactionDetail->resizeColumnsToContents();
+    ui->tableView_refund_transactionDetail->show();
 }
 
 void SSMS_UI::on_button_refund_refund_clicked() {
+    if (user.get_userRole_int() != 1 && user.get_userRole_int() != 2) {
+        QMessageBox::warning(nullptr, "No Permission", "No Permission. Please contact manager or admin. You're not permitted to make a refund.");
+        return;
+    }
 
+    QString transactionID = ui->lineEdit_refund_transactionID->text();
+
+    // Check whether the record exists and then mark it "refunded"
+    QSqlQuery queryCheck;
+    queryCheck.prepare("UPDATE transactions SET transaction_status = 'refunded', transaction_profit = 0 WHERE transaction_id = :transactionID AND transaction_status = 'done'");
+    queryCheck.bindValue(":transactionID", transactionID);
+    queryCheck.exec();
+
+    if (queryCheck.numRowsAffected() == 0) {
+        QMessageBox::warning(nullptr, "Refund failed", "Refund failed. No related records found or the transaction is already refunded.");
+        return;
+    }
+
+    // Update the stock quantity
+    QSqlQuery queryDetails;
+    queryDetails.prepare("SELECT * FROM transaction_details WHERE transaction_id = :transactionID");
+    queryDetails.bindValue(":transactionID", transactionID);
+    queryDetails.exec();
+
+    while (queryDetails.next()) {
+        // Get good_id and quantity
+        QString goodID = queryDetails.value("good_id").toString();
+        int refundedQty = queryDetails.value("good_qty").toInt();
+
+        // Chech good stock qty
+        QSqlQuery queryGood;
+        queryGood.prepare("SELECT good_stock_qty FROM goods WHERE good_id = :goodID");
+        queryGood.bindValue(":goodID", goodID);
+        queryGood.exec();
+
+        if (queryGood.next()) {
+            // Add the refunded qty back
+            int currentQty = queryGood.value("good_stock_qty").toInt();
+            int newQty = currentQty + refundedQty;
+
+            // Update good stock qty
+            QSqlQuery updateQuery;
+            updateQuery.prepare("UPDATE goods SET good_stock_qty = :newQty WHERE good_id = :goodID");
+            updateQuery.bindValue(":newQty", newQty);
+            updateQuery.bindValue(":goodID", goodID);
+            updateQuery.exec();
+        }
+    }
+
+    QMessageBox::information(nullptr, "Refund succeed", "Refund succeed");
+
+    on_calendar_refund_date_selectionChanged();
+    ui->lineEdit_refund_transactionID->clear();
+    ui->checkBox_refund_manualInput->setChecked(false);
 }
 // endregion
 
