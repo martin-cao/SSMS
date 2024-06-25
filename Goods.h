@@ -44,7 +44,6 @@ namespace SSMS {
             available,
             unavailable,
             outOfStock, // 缺货
-            preOrder, // 预售
             discontinued // 停产
         };
         Q_ENUM(goodStatus)
@@ -83,6 +82,7 @@ namespace SSMS {
 
         // Constructor
         Goods();
+        Goods(const Goods& other);
 
         // Inquiring functions
         QString get_goodID();

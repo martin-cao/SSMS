@@ -14,6 +14,22 @@ namespace SSMS {
         std::cout << "[SSMS_SYSTEM] class Goods member constructed" << std::endl;
     }
 
+    Goods::Goods(const Goods& other) {
+        m_goodID = other.m_goodID;
+        m_goodName = other.m_goodName;
+        m_goodType = other.m_goodType;
+        m_goodBrand = other.m_goodBrand;
+        m_goodCode = other.m_goodCode;
+        m_goodStockQty = other.m_goodStockQty;
+        m_goodPurchasePrice = other.m_goodPurchasePrice;
+        m_goodSellingPrice = other.m_goodSellingPrice;
+        m_goodDiscount = other.m_goodDiscount;
+        m_goodStatus = other.m_goodStatus;
+        m_goodIsOnSale = other.m_goodIsOnSale;
+        m_goodDescription = other.m_goodDescription;
+        m_SSMS_isSelected = other.m_SSMS_isSelected;
+    }
+
     // region Inquiring functions
     QString Goods::get_goodID() {
         return m_goodID;
@@ -83,7 +99,6 @@ namespace SSMS {
 
         return false;
     }
-    /* TODO 允许结账时主动设置折扣，并且允许override该提示 */
 
     bool Goods::isSelected(bool f_msg) {
         if (m_SSMS_isSelected)
@@ -101,26 +116,31 @@ namespace SSMS {
     void Goods::select(QString f_id) {
         QSqlQuery query;
         query.prepare("SELECT * FROM goods WHERE good_id = :goodID");
-        query.bindValue(":goodID", m_goodID);
+        query.bindValue(":goodID", f_id);
         query.exec();
 
-        if (query.next())
+        if (query.next()) {
             m_SSMS_isSelected = true;
 
-        m_goodID = query.value("good_id").toString();
-        m_goodName = query.value("good_name").toString();
-        QMetaEnum metaEnum_goodType = QMetaEnum::fromType<Goods::goodType>();
-        m_goodType = static_cast<Goods::goodType>(metaEnum_goodType.keyToValue(query.value("good_type").toString().toStdString().c_str()));
-        m_goodBrand = query.value("good_brand").toString();
-        m_goodCode = query.value("good_code").toString();
-        m_goodStockQty = query.value("good_stock_qty").toInt();
-        m_goodPurchasePrice = query.value("good_purcahse_price").toDouble();
-        m_goodSellingPrice = query.value("good_selling_price").toDouble();
-        m_goodDiscount = query.value("good_discount").toDouble();
-        QMetaEnum metaEnum__goodStatus = QMetaEnum::fromType<SSMS::Goods::goodStatus>();
-        m_goodStatus = static_cast<Goods::goodStatus>(metaEnum__goodStatus.keyToValue(query.value("good_status").toString().toStdString().c_str()));
-        m_goodIsOnSale = query.value("good_is_on_sale").toBool();
-        m_goodDescription = query.value("good_description").toString();
+            m_goodID = query.value("good_id").toString();
+            m_goodName = query.value("good_name").toString();
+            QMetaEnum metaEnum_goodType = QMetaEnum::fromType<Goods::goodType>();
+            m_goodType = static_cast<Goods::goodType>(metaEnum_goodType.keyToValue(query.value("good_type").toString().toStdString().c_str()));
+            m_goodBrand = query.value("good_brand").toString();
+            m_goodCode = query.value("good_code").toString();
+            m_goodStockQty = query.value("good_stock_qty").toInt();
+            m_goodPurchasePrice = query.value("good_purchase_price").toDouble();
+            m_goodSellingPrice = query.value("good_selling_price").toDouble();
+            m_goodDiscount = query.value("good_discount").toDouble();
+            QMetaEnum metaEnum__goodStatus = QMetaEnum::fromType<SSMS::Goods::goodStatus>();
+            m_goodStatus = static_cast<Goods::goodStatus>(metaEnum__goodStatus.keyToValue(query.value("good_status").toString().toStdString().c_str()));
+            m_goodIsOnSale = query.value("good_is_on_sale").toBool();
+            m_goodDescription = query.value("good_description").toString();
+
+//            qDebug() << "[DEBUG] Goods::select() selected good name: " << m_goodName;
+        } else {
+            m_SSMS_isSelected = false;
+        }
     }
 
     void Goods::unselect() {

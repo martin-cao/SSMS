@@ -67,7 +67,9 @@ private slots:
     */
 
     void on_button_selling_search_clicked();
+    void on_tableView_selling_search_clicked(const QModelIndex& index);
     void on_button_selling_add_clicked();
+    void on_button_selling_reset_clicked();
     void on_button_selling_checkOut_clicked();
 
     // Stock tab

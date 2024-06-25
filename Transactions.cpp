@@ -31,9 +31,19 @@ namespace SSMS {
     //endregion
 
     // region Operating functions
-    void Transactions::addItem(Goods &f_good, int f_qty) {
+    void Transactions::addItem(Goods f_good, int f_qty) {
+        if (f_good.get_goodStatus() != Goods::available) {
+            qDebug() << "[DEBUG] Cannot add item: Item is not available";
+            return;
+        }
+
+        for (auto& item : m_itemList) {
+            if (item.m_good.get_goodID() == f_good.get_goodID()) {
+                item.m_qty += f_qty;
+                return;
+            }
+        }
         m_itemList.emplace_back(f_good, f_qty);
-//        m_totalPrice += f_good.get_goodSellingPrice() * (1 - f_good.get_goodDiscount()) * f_qty;
     }
 
     void Transactions::removeItem(std::string f_goodID) {

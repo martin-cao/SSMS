@@ -51,14 +51,14 @@ namespace SSMS {
         query.bindValue(":pwd", pwdHashStr);
 
         // Debug output before executing the query
-        qDebug() << "[SSMS_SYSTEM_DB] Preparing to execute query";
-        qDebug() << "Username: " << f_username;
-        qDebug() << "Password hash: " << pwdHashStr;
+//        qDebug() << "[SSMS_SYSTEM_DB] Preparing to execute query";
+//        qDebug() << "Username: " << f_username;
+//        qDebug() << "Password hash: " << pwdHashStr;
 
         if (!query.exec()) {
             // Debug output if the query execution fails
-            qDebug() << "[SSMS_SYSTEM_DB] Query execution failed";
-            qDebug() << "Query error: " << query.lastError().text();
+//            qDebug() << "[SSMS_SYSTEM_DB] Query execution failed";
+//            qDebug() << "Query error: " << query.lastError().text();
             return 401;
         }
 

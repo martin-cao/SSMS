@@ -44,9 +44,9 @@ int main(int argc, char *argv[]) {
         }
 
         if (!file.copy(dbPath)) {
-            qDebug() << "Failed to copy database file: " << file.errorString();
+//            qDebug() << "Failed to copy database file: " << file.errorString();
         } else if (!file.setPermissions(QFile::ReadUser | QFile::WriteUser)) {
-            qDebug() << "Failed to set permissions: " << file.errorString();
+//            qDebug() << "Failed to set permissions: " << file.errorString();
         } else {
             qDebug() << "Copy succeed";
         }

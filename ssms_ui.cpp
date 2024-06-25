@@ -23,11 +23,33 @@ void SSMS_UI::startUp() {
     ui->stackedWidget_main->setCurrentIndex(1);
     ui->tabWidget->setCurrentIndex(0);
     // on_slots_done()...
+
+    // Selling tab initialization
+    on_button_selling_search_clicked();
     refreshSellingSummary();
 }
 
 void SSMS_UI::refreshSellingSummary() {
-    // 更新结账小结 to-be-done
+    QString display = "";
+    double totalPrice = 0;
+
+    for (auto& item : transaction.get_itemList()) {
+        QString goodName = item.m_good.get_goodName();
+//        qDebug() << "Good name: " << goodName;
+        int qty = item.m_qty;
+        double discount = item.m_good.get_goodDiscount();
+        double itemTotalPrice = item.m_unitPrice * qty;
+
+        display += QString("Name: %1, Qty: %2, Discount: %3\n")
+                .arg(goodName)
+                .arg(qty)
+                .arg(discount);
+    }
+
+    totalPrice = transaction.get_totalPrice();
+    display += QString("\nTotal Price: %1").arg(totalPrice);
+
+    ui->textBrowser_selling_summary->setText(display);
 }
 
 void SSMS_UI::refreshAccountsTable() {
@@ -53,6 +75,8 @@ void SSMS_UI::on_button_login_clicked() {
 }
 
 void SSMS_UI::on_button_logOut_clicked() {
+    ui->lineEdit_login_username->clear();
+    ui->lineEdit_login_password->clear();
     ui->stackedWidget_main->setCurrentIndex(1);
 }
 
@@ -94,11 +118,58 @@ textBrowser_selling_summary
 */
 
 void SSMS_UI::on_button_selling_search_clicked() {
+    QString term;
+    QString keyword = ui->lineEdit_selling_search->text();
 
+    switch (ui->comboBox_selling_searchBy->currentIndex()) {
+        case 0:
+            term = "good_id";
+            break;
+        case 1:
+            term = "good_name";
+            break;
+        case 2:
+            term = "good_code";
+            break;
+        case 3:
+            term = "good_brand";
+            break;
+        default:
+            QMessageBox::warning(nullptr, "Search error", "\"Search by\" invalid.");
+    }
+
+    QSqlTableModel* model = new QSqlTableModel;
+
+    model->setTable("goods");
+    model->setFilter(QString("%1 LIKE '%%2%'").arg(term, keyword));
+    model->select();
+
+    ui->tableView_selling_search->setModel(model);
+    ui->tableView_selling_search->resizeColumnsToContents();
+    ui->tableView_selling_search->show();
+}
+
+void SSMS_UI::on_tableView_selling_search_clicked(const QModelIndex &index) {
+    int row = index.row();
+
+    QModelIndex goodIDIndex = ui->tableView_selling_search->model()->index(row, 0);
+    QString goodID = ui->tableView_selling_search->model()->data(goodIDIndex).toString();
+
+    good.select(goodID);
+
+    ui->spinBox_selling_quantity->setValue(1);
 }
 
 void SSMS_UI::on_button_selling_add_clicked() {
+    int goodQty = ui->spinBox_selling_quantity->value();
 
+    transaction.addItem(good, goodQty);
+    refreshSellingSummary();
+}
+
+void SSMS_UI::on_button_selling_reset_clicked() {
+    transaction.reset();
+    refreshSellingSummary();
 }
 
 void SSMS_UI::on_button_selling_checkOut_clicked() {

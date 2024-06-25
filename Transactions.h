@@ -55,7 +55,7 @@ namespace SSMS {
         bool isSelected(bool f_msg = true);
 
         // Operationg functions
-        void addItem(Goods& f_good, int f_qty);
+        void addItem(Goods f_good, int f_qty);
         void removeItem(std::string f_goodID);
         void modifyQty(std::string f_goodID, int f_qty);
         void calcTotalPrice();
