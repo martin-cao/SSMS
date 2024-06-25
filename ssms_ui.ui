@@ -112,7 +112,7 @@
            <bool>true</bool>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <property name="movable">
            <bool>false</bool>
@@ -407,30 +407,23 @@
                </size>
               </property>
               <property name="currentIndex">
-               <number>2</number>
+               <number>0</number>
               </property>
               <widget class="QWidget" name="page_add">
                <property name="geometry">
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>238</width>
-                 <height>270</height>
+                 <width>200</width>
+                 <height>415</height>
                 </rect>
                </property>
                <attribute name="label">
                 <string>Add</string>
                </attribute>
                <layout class="QGridLayout" name="gridLayout_11">
-                <item row="0" column="0">
-                 <widget class="QLabel" name="label_9">
-                  <property name="text">
-                   <string>ID:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="1">
-                 <widget class="QLineEdit" name="lineEdit_stock_add_id"/>
+                <item row="5" column="1">
+                 <widget class="QLineEdit" name="lineEdit_stock_add_brand"/>
                 </item>
                 <item row="1" column="0">
                  <widget class="QLabel" name="label_10">
@@ -438,9 +431,6 @@
                    <string>Name:</string>
                   </property>
                  </widget>
-                </item>
-                <item row="1" column="1">
-                 <widget class="QLineEdit" name="lineEdit_stock_add_name"/>
                 </item>
                 <item row="2" column="1">
                  <widget class="QComboBox" name="comboBox_stock_add_type">
@@ -466,141 +456,10 @@
                   </item>
                  </widget>
                 </item>
-                <item row="5" column="0">
-                 <widget class="QLabel" name="label_12">
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_9">
                   <property name="text">
-                   <string>Brand:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="5" column="1">
-                 <widget class="QLineEdit" name="lineEdit_stock_add_brand"/>
-                </item>
-                <item row="6" column="1">
-                 <widget class="QComboBox" name="comboBox_stock_add_specs">
-                  <item>
-                   <property name="text">
-                    <string>gram</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>kilogram</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>millilitre</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>litre</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>pcs</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>pack</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>box</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>bag</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>cup</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>rool</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>can</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>bottle</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>size S</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>size M</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>size L</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>size XL</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>metre (m)</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>centimetre (cm)</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>square metre (sqm)</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>other</string>
-                   </property>
-                  </item>
-                 </widget>
-                </item>
-                <item row="9" column="0">
-                 <widget class="QLabel" name="label_14">
-                  <property name="text">
-                   <string>Code:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="9" column="1">
-                 <widget class="QLineEdit" name="lineEdit_stock_add_code">
-                  <property name="text">
-                   <string/>
-                  </property>
-                 </widget>
-                </item>
-                <item row="10" column="0" colspan="2">
-                 <widget class="QLabel" name="label_15">
-                  <property name="text">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Edit other specs in the Edit page.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                  </property>
-                  <property name="wordWrap">
-                   <bool>true</bool>
+                   <string>ID:</string>
                   </property>
                  </widget>
                 </item>
@@ -611,17 +470,47 @@
                   </property>
                  </widget>
                 </item>
-                <item row="6" column="0">
-                 <widget class="QLabel" name="label_13">
+                <item row="8" column="1">
+                 <widget class="QLineEdit" name="lineEdit_stock_add_code">
                   <property name="text">
-                   <string>Specs:</string>
+                   <string/>
                   </property>
                  </widget>
                 </item>
-                <item row="11" column="0" colspan="2">
+                <item row="9" column="0" colspan="2">
+                 <widget class="QLabel" name="label_15">
+                  <property name="text">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Edit other specs in the Edit page.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                  <property name="wordWrap">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QLineEdit" name="lineEdit_stock_add_name"/>
+                </item>
+                <item row="10" column="0" colspan="2">
                  <widget class="QPushButton" name="button_stock_add_add">
                   <property name="text">
                    <string>Add</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="5" column="0">
+                 <widget class="QLabel" name="label_12">
+                  <property name="text">
+                   <string>Brand:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QLineEdit" name="lineEdit_stock_add_id"/>
+                </item>
+                <item row="8" column="0">
+                 <widget class="QLabel" name="label_14">
+                  <property name="text">
+                   <string>Code:</string>
                   </property>
                  </widget>
                 </item>
@@ -1340,7 +1229,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
      <x>0</x>
      <y>0</y>
      <width>887</width>
-     <height>24</height>
+     <height>37</height>
     </rect>
    </property>
   </widget>

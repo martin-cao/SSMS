@@ -93,9 +93,12 @@ void SSMS_UI::on_tabWidget_currentChanged() {
         case 0:
             qDebug() << "[SSMS_SYSTEM_VIEW] Turned to tab Selling";
             transaction.reset();
+            on_button_selling_search_clicked();
+            refreshSellingSummary();
             break;
         case 1:
             qDebug() << "[SSMS_SYSTEM_VIEW] Turned to tab Stock";
+            on_button_stock_search_clicked();
             break;
         case 2:
             qDebug() << "[SSMS_SYSTEM_VIEW] Turned to tab Refund";
@@ -282,19 +285,166 @@ comboBox_stock_add_specs
 lineEdit_stock_add_code
 */
 void SSMS_UI::on_button_stock_search_clicked() {
+    QString term;
+    QString keyword = ui->lineEdit_selling_search->text();
 
+    switch (ui->comboBox_selling_searchBy->currentIndex()) {
+        case 0:
+            term = "good_id";
+            break;
+        case 1:
+            term = "good_name";
+            break;
+        case 2:
+            term = "good_code";
+            break;
+        case 3:
+            term = "good_brand";
+            break;
+        default:
+            QMessageBox::warning(nullptr, "Search error", "\"Search by\" invalid.");
+    }
+
+    QSqlQuery query;
+    QString queryStr = QString("SELECT * FROM goods WHERE %1 LIKE :keyword").arg(term);
+    query.prepare(queryStr);
+    query.bindValue(":keyword", "%" + keyword + "%");
+    query.exec();
+
+    if (!query.next()) {
+        QMessageBox::warning(nullptr, "Search failed", "No goods searched.");
+    }
+
+
+    queryTable->setTable("goods");
+    queryTable->select();
+    queryTable->setQuery(query);
+
+    ui->tableView_stock_search->setModel(queryTable);
+    ui->tableView_stock_search->resizeColumnsToContents();
+    ui->tableView_stock_search->show();
+    queryTable->setEditStrategy(QSqlTableModel::OnManualSubmit);
 }
 
 void SSMS_UI::on_button_stock_add_add_clicked() {
+    QString goodID = ui->lineEdit_stock_add_id->text();
+    QString goodName = ui->lineEdit_stock_add_name->text();
+    SSMS::Goods::goodType goodType;
+    switch (ui->comboBox_stock_add_type->currentIndex()) {
+        case 0:
+            goodType = SSMS::Goods::food;
+            break;
+        case 1:
+            goodType = SSMS::Goods::beverage;
+            break;
+        case 2:
+            goodType = SSMS::Goods::dailyUse;
+            break;
+        case 3:
+            goodType = SSMS::Goods::makeups;
+            break;
+        default:
+            QMessageBox::warning(nullptr, "Operation error", "\"Good type\" invalid.");
+    }
+    QString goodBrand = ui->lineEdit_stock_add_brand->text();
+    QString goodCode = ui->lineEdit_stock_add_code->text();
+
+    // Check if good ID is existed
+    QSqlQuery queryCheck;
+    queryCheck.prepare("SELECT * FROM goods WHERE good_id = :goodID");
+    queryCheck.bindValue(":goodID", goodID);
+    queryCheck.exec();
+    if (queryCheck.next()) {
+        QMessageBox::warning(nullptr, "Add failed", "Good ID is existed, please check the info.");
+        return;
+    }
+
+    QSqlQuery query;
+    query.prepare("INSERT INTO goods (good_id, good_name, good_type, good_brand, good_code, good_stock_qty, good_purchase_price, good_selling_price, good_discount, good_status, good_is_on_sale, good_description) VALUES (:goodID, :goodName, :goodType, :goodBrand, :goodCode, :goodStockQty, :goodPurchasePrice, :goodSellingPrice, :goodDiscount, :goodStatus, :goodIsOnSale, :goodDescription)");
+
+    query.bindValue(":goodID", goodID);
+    query.bindValue(":goodName", goodName);
+    QMetaEnum metaEnum_goodType = QMetaEnum::fromType<SSMS::Goods::goodType>();
+    QString goodTypeStr = metaEnum_goodType.valueToKey(goodType);
+    query.bindValue(":goodType", goodTypeStr);
+    query.bindValue(":goodBrand", goodBrand);
+    query.bindValue(":goodCode", goodCode);
+    query.bindValue(":goodStockQty", 0);
+    query.bindValue(":goodPurchasePrice", 0);
+    query.bindValue(":goodSellingPrice", 0);
+    query.bindValue(":goodDiscount", 0);
+    query.bindValue(":goodStatus", "unavailable");
+    query.bindValue(":goodIsOnSale", 0);
+    query.bindValue(":goodDescription", "");
+
+    if (!query.exec()) {
+        qDebug() << "Error: " << query.lastError().text();
+    }
+
+    if (query.numRowsAffected() > 0) {
+        on_button_stock_search_clicked(); // Refresh the table
+        QMessageBox::information(nullptr, "Addition succeed", "Adding goods succeed.");
+    } else {
+        QMessageBox::warning(nullptr, "Addition failed", "Adding good failed.");
+        qDebug() << "Query: " << query.lastQuery();
+        qDebug() << "Values: " << query.boundValues();
+    }
 
 }
 
 void SSMS_UI::on_button_stock_edit_confirm_clicked() {
+    queryTable->database().transaction();
 
+    if (!queryTable->submitAll()) {
+        qDebug() << "[SSMS_SYSTEM_DB] Transaction edit failed";
+        qDebug() << queryTable->lastError().text();
+        queryTable->database().rollback();
+        QMessageBox::warning(nullptr, "Edit failed", "Please check if the data inputted is legal.");
+        on_button_stock_search_clicked();
+    } else {
+        qDebug() << "[SSMS_SYSTEM_DB] Transaction edit succeed";
+        queryTable->database().commit();
+        QMessageBox::information(nullptr, "Edit succeed", "Edit goods info succeed.");
+    }
+
+    good.unselect();
 }
 
 void SSMS_UI::on_button_stock_delete_delete_clicked() {
+    QSqlDatabase::database().transaction();  // Start a transaction
+    int row = ui->tableView_stock_search->currentIndex().row();
 
+    // Check if any row is selected
+    if (row == -1) {
+        QMessageBox::warning(nullptr, "Deletion failed", "Please select one line first.");
+        return;
+    }
+
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Delete confirmation", "Are you sure you want to delete this item?", QMessageBox::Cancel | QMessageBox::Yes, QMessageBox::Cancel);
+    qDebug() << "Reply: " << reply;
+
+    if (reply == QMessageBox::Yes) {
+        if (!queryTable->removeRow(row)) {
+            qDebug() << "Error removing row: " << queryTable->lastError().text();
+            QSqlDatabase::database().rollback();  // Rollback the transaction
+            QMessageBox::warning(this, "Deletion failed", "Failed to remove the row.");
+            return;
+        }
+
+        if (!queryTable->submitAll()) {
+            qDebug() << "Error submitting changes: " << queryTable->lastError().text();
+            QSqlDatabase::database().rollback();  // Rollback the transaction
+            QMessageBox::warning(this, "Deletion failed", "Failed to submit changes.");
+            return;
+        }
+
+        QSqlDatabase::database().commit();  // Commit the transaction
+        QMessageBox::information(this, "Deletion succeed", "Deleting goods succeed.");
+
+        on_button_stock_search_clicked();
+        good.unselect();
+    }
 }
 // endregion
 

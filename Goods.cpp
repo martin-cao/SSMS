@@ -132,8 +132,8 @@ namespace SSMS {
             m_goodPurchasePrice = query.value("good_purchase_price").toDouble();
             m_goodSellingPrice = query.value("good_selling_price").toDouble();
             m_goodDiscount = query.value("good_discount").toDouble();
-            QMetaEnum metaEnum__goodStatus = QMetaEnum::fromType<SSMS::Goods::goodStatus>();
-            m_goodStatus = static_cast<Goods::goodStatus>(metaEnum__goodStatus.keyToValue(query.value("good_status").toString().toStdString().c_str()));
+            QMetaEnum metaEnum_goodStatus = QMetaEnum::fromType<SSMS::Goods::goodStatus>();
+            m_goodStatus = static_cast<Goods::goodStatus>(metaEnum_goodStatus.keyToValue(query.value("good_status").toString().toStdString().c_str()));
             m_goodIsOnSale = query.value("good_is_on_sale").toBool();
             m_goodDescription = query.value("good_description").toString();
 
