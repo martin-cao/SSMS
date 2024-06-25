@@ -5,7 +5,7 @@
 
 This app is still in early development.
 
-Currently features below is available:
+Currently features below are available:
 
 - Selling
 - - Goods search
