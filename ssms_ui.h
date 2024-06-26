@@ -30,9 +30,9 @@ public:
     // region System Ui functions
     void startUp();
 //        void showPath();
-    void refreshSellingSummary();
 
 private:
+    void refreshSellingSummary();
     void refreshAccountsTable();
     // endregion
 

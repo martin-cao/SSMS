@@ -196,6 +196,10 @@ void SSMS_UI::on_tableView_selling_search_clicked(const QModelIndex &index) {
 void SSMS_UI::on_button_selling_add_clicked() {
     int goodQty = ui->spinBox_selling_quantity->value();
 
+    if (!good.isCoveredAfterDiscount(good.get_goodDiscount(), true)) {
+        return;
+    }
+
     transaction.addItem(good, goodQty);
     transaction.calcTotalPrice();
     transaction.calcProfit();
