@@ -112,7 +112,7 @@
            <bool>true</bool>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>3</number>
           </property>
           <property name="movable">
            <bool>false</bool>
@@ -414,8 +414,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>200</width>
-                 <height>428</height>
+                 <width>180</width>
+                 <height>250</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -566,8 +566,8 @@ li.checked::marker { content: &quot;\2612&quot;; }
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>200</width>
-                 <height>428</height>
+                 <width>98</width>
+                 <height>470</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -801,6 +801,26 @@ li.checked::marker { content: &quot;\2612&quot;; }
                   <height>16777215</height>
                  </size>
                 </property>
+                <item>
+                 <property name="text">
+                  <string>All Transactions (By date)</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Operator (Sales qty)</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Operator (Profit)</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>All Products (Sales qty)</string>
+                 </property>
+                </item>
                </widget>
               </item>
              </layout>
@@ -1017,8 +1037,8 @@ li.checked::marker { content: &quot;\2612&quot;; }
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>100</width>
-                       <height>454</height>
+                       <width>98</width>
+                       <height>470</height>
                       </rect>
                      </property>
                      <attribute name="label">
@@ -1243,7 +1263,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
      <x>0</x>
      <y>0</y>
      <width>887</width>
-     <height>24</height>
+     <height>37</height>
     </rect>
    </property>
   </widget>

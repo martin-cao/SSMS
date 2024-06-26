@@ -109,6 +109,9 @@ void SSMS_UI::on_tabWidget_currentChanged() {
             break;
         case 3:
             qDebug() << "[SSMS_SYSTEM_VIEW] Turned to tab Stats";
+            ui->tableView_stats_table->setSelectionMode(QAbstractItemView::NoSelection);
+            ui->tableView_stats_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
+            on_comboBox_stats_statisticsBy_currentIndexChanged();
             break;
         case 4:
             qDebug() << "[SSMS_SYSTEM_VIEW] Turned to tab User";
@@ -603,7 +606,41 @@ comboBox_stats_statisticsBy
 tableView_stats_table
 */
 void SSMS_UI::on_comboBox_stats_statisticsBy_currentIndexChanged() {
+    int term = ui->comboBox_stats_statisticsBy->currentIndex();
+    /* 0 - All Transactions (By date, descend)
+     * 1 - Operator (Sales qty, descend)
+     * 2 - Operator (Profit, descend)
+     * 3 - All Products (Sales qty, descend)
+     */
 
+    QSqlQuery query;
+    QString queryStr;
+
+    switch (term) {
+        case 0:
+            queryStr = "SELECT * FROM transactions ORDER BY transaction_time DESC";
+            break;
+        case 1:
+            queryStr = "SELECT transaction_uid, COUNT(*) as sales_qty FROM transactions GROUP BY transaction_uid ORDER BY sales_qty DESC";
+            break;
+        case 2:
+            queryStr = "SELECT transaction_uid, SUM(transaction_profit) as total_profit FROM transactions GROUP BY transaction_uid ORDER BY total_profit DESC";
+            break;
+        case 3:
+            queryStr = "SELECT goods.good_id, goods.good_name, SUM(good_qty) as total_qty FROM transaction_details INNER JOIN goods ON transaction_details.good_id = goods.good_id GROUP BY goods.good_id, goods.good_name ORDER BY total_qty DESC";
+            break;
+        default:
+            QMessageBox::warning(nullptr, "Statistics error", "\"Statistics by\" invalid.");
+    }
+
+    query.prepare(queryStr);
+    query.exec();
+
+    QSqlQueryModel* model = new QSqlQueryModel;
+    model->setQuery(std::move(query));
+    ui->tableView_stats_table->setModel(model);
+    ui->tableView_stats_table->resizeColumnsToContents();
+    ui->tableView_stats_table->show();
 }
 // endregion
 
