@@ -16,6 +16,8 @@ Currently features below are available:
 - - Delete product
 - Transaction management (refund)
 - - Refund
+- Statistics
+- - Statistics (4 views)
 - User management
 - - Log in and Log out
 
