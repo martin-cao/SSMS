@@ -118,6 +118,13 @@ private slots:
     void on_button_user_switchToPersonalMode_clicked();
     void on_button_user_switchToAdminMode_clicked();
 
+    void on_lineEdit_user_personalEdit_uid_textChanged(const QString &uid);
+    void on_button_user_personalEdit_clicked();
+
+    void on_tableView_user_userTable_clicked(const QModelIndex& index);
+    void on_button_user_add_clicked();
+    void on_button_user_edit_clicked();
+    void on_button_user_delete_clicked();
 };
 
 

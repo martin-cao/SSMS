@@ -30,6 +30,8 @@
 #include <QTableView>
 #include <QMessageBox>
 
+#include <QCryptographicHash>
+
 #include <QDebug>
 
 

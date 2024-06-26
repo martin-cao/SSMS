@@ -112,7 +112,7 @@
            <bool>true</bool>
           </property>
           <property name="currentIndex">
-           <number>3</number>
+           <number>4</number>
           </property>
           <property name="movable">
            <bool>false</bool>
@@ -414,8 +414,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>180</width>
-                 <height>250</height>
+                 <width>200</width>
+                 <height>428</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -566,8 +566,8 @@ li.checked::marker { content: &quot;\2612&quot;; }
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>98</width>
-                 <height>470</height>
+                 <width>100</width>
+                 <height>454</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -843,7 +843,11 @@ li.checked::marker { content: &quot;\2612&quot;; }
               <widget class="QWidget" name="page">
                <layout class="QGridLayout" name="gridLayout_17">
                 <item row="0" column="0">
-                 <widget class="QTableView" name="tableView"/>
+                 <widget class="QTableView" name="tableView_user_userTable">
+                  <property name="selectionBehavior">
+                   <enum>QAbstractItemView::SelectRows</enum>
+                  </property>
+                 </widget>
                 </item>
                 <item row="0" column="1">
                  <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -856,15 +860,15 @@ li.checked::marker { content: &quot;\2612&quot;; }
                      </size>
                     </property>
                     <property name="currentIndex">
-                     <number>1</number>
+                     <number>0</number>
                     </property>
                     <widget class="QWidget" name="page_addUser">
                      <property name="geometry">
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>234</width>
-                       <height>182</height>
+                       <width>300</width>
+                       <height>361</height>
                       </rect>
                      </property>
                      <attribute name="label">
@@ -945,8 +949,8 @@ li.checked::marker { content: &quot;\2612&quot;; }
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>250</width>
-                       <height>213</height>
+                       <width>300</width>
+                       <height>361</height>
                       </rect>
                      </property>
                      <attribute name="label">
@@ -955,54 +959,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
                      <layout class="QGridLayout" name="gridLayout_15">
                       <item row="0" column="0">
                        <layout class="QGridLayout" name="gridLayout_14">
-                        <item row="0" column="0">
-                         <widget class="QLabel" name="label_22">
-                          <property name="text">
-                           <string>Username:</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="0" column="2">
-                         <widget class="QLineEdit" name="lineEdit_user_add_username_2"/>
-                        </item>
-                        <item row="1" column="0">
-                         <widget class="QLabel" name="label_23">
-                          <property name="text">
-                           <string>Old Password:</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="1" column="2">
-                         <widget class="QLineEdit" name="lineEdit_user_add_password_old"/>
-                        </item>
-                        <item row="2" column="0" colspan="2">
-                         <widget class="QLabel" name="label_25">
-                          <property name="text">
-                           <string>New Password:</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="2" column="2">
-                         <widget class="QLineEdit" name="lineEdit_user_add_password_new"/>
-                        </item>
-                        <item row="3" column="0" colspan="2">
-                         <widget class="QLabel" name="label_26">
-                          <property name="text">
-                           <string>Input Again:</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="3" column="2">
-                         <widget class="QLineEdit" name="lineEdit_user_add_password_new_again"/>
-                        </item>
-                        <item row="4" column="0">
-                         <widget class="QLabel" name="label_24">
-                          <property name="text">
-                           <string>Role:</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="4" column="1" colspan="2">
+                        <item row="6" column="1" colspan="2">
                          <widget class="QComboBox" name="comboBox_user_edit_role">
                           <item>
                            <property name="text">
@@ -1021,6 +978,67 @@ li.checked::marker { content: &quot;\2612&quot;; }
                           </item>
                          </widget>
                         </item>
+                        <item row="4" column="0" colspan="2">
+                         <widget class="QLabel" name="label_25">
+                          <property name="text">
+                           <string>New Password:</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="5" column="0" colspan="2">
+                         <widget class="QLabel" name="label_26">
+                          <property name="text">
+                           <string>Input Again:</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="5" column="2">
+                         <widget class="QLineEdit" name="lineEdit_user_edit_password_new_again"/>
+                        </item>
+                        <item row="4" column="2">
+                         <widget class="QLineEdit" name="lineEdit_user_edit_password_new"/>
+                        </item>
+                        <item row="6" column="0">
+                         <widget class="QLabel" name="label_24">
+                          <property name="text">
+                           <string>Role:</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="2" column="2">
+                         <widget class="QLineEdit" name="lineEdit_user_edit_username"/>
+                        </item>
+                        <item row="3" column="0">
+                         <widget class="QLabel" name="label_23">
+                          <property name="text">
+                           <string>Old Password:</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="3" column="2">
+                         <widget class="QLineEdit" name="lineEdit_user_edit_password_old"/>
+                        </item>
+                        <item row="2" column="0">
+                         <widget class="QLabel" name="label_22">
+                          <property name="text">
+                           <string>Username:</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="0" column="0">
+                         <widget class="QLabel" name="label_37">
+                          <property name="text">
+                           <string>User ID:</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="0" column="2">
+                         <widget class="QLineEdit" name="lineEdit_user_edit_uid">
+                          <property name="readOnly">
+                           <bool>true</bool>
+                          </property>
+                         </widget>
+                        </item>
                        </layout>
                       </item>
                       <item row="1" column="0">
@@ -1037,8 +1055,8 @@ li.checked::marker { content: &quot;\2612&quot;; }
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>98</width>
-                       <height>470</height>
+                       <width>300</width>
+                       <height>361</height>
                       </rect>
                      </property>
                      <attribute name="label">
@@ -1089,55 +1107,55 @@ li.checked::marker { content: &quot;\2612&quot;; }
                  <layout class="QVBoxLayout" name="verticalLayout_6">
                   <item>
                    <layout class="QGridLayout" name="gridLayout_24">
-                    <item row="0" column="0">
-                     <widget class="QLabel" name="label_31">
-                      <property name="text">
-                       <string>Username:</string>
-                      </property>
-                     </widget>
-                    </item>
                     <item row="0" column="2">
-                     <widget class="QLineEdit" name="lineEdit_user_add_username_3"/>
+                     <widget class="QLineEdit" name="lineEdit_user_personalEdit_uid"/>
                     </item>
-                    <item row="1" column="0">
-                     <widget class="QLabel" name="label_32">
-                      <property name="text">
-                       <string>Old Password:</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="2">
-                     <widget class="QLineEdit" name="lineEdit_user_add_password_old_2"/>
-                    </item>
-                    <item row="2" column="0" colspan="2">
-                     <widget class="QLabel" name="label_33">
-                      <property name="text">
-                       <string>New Password:</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="2">
-                     <widget class="QLineEdit" name="lineEdit_user_add_password_new_2"/>
-                    </item>
-                    <item row="3" column="0" colspan="2">
+                    <item row="5" column="0" colspan="2">
                      <widget class="QLabel" name="label_34">
                       <property name="text">
                        <string>Input Again:</string>
                       </property>
                      </widget>
                     </item>
-                    <item row="3" column="2">
-                     <widget class="QLineEdit" name="lineEdit_user_add_password_new_again_2"/>
+                    <item row="5" column="2">
+                     <widget class="QLineEdit" name="lineEdit_user_personalEdit_password_new_again"/>
                     </item>
-                    <item row="4" column="0">
+                    <item row="3" column="2">
+                     <widget class="QLineEdit" name="lineEdit_user_personalEdit_password_old"/>
+                    </item>
+                    <item row="6" column="0">
                      <widget class="QLabel" name="label_36">
                       <property name="text">
                        <string>Role:</string>
                       </property>
                      </widget>
                     </item>
-                    <item row="4" column="1" colspan="2">
-                     <widget class="QComboBox" name="comboBox_user_edit_role_2">
+                    <item row="4" column="0" colspan="2">
+                     <widget class="QLabel" name="label_33">
+                      <property name="text">
+                       <string>New Password:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="4" column="2">
+                     <widget class="QLineEdit" name="lineEdit_user_personalEdit_password_new"/>
+                    </item>
+                    <item row="0" column="0">
+                     <widget class="QLabel" name="label_31">
+                      <property name="text">
+                       <string>User ID:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="3" column="0">
+                     <widget class="QLabel" name="label_32">
+                      <property name="text">
+                       <string>Old Password:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="6" column="1" colspan="2">
+                     <widget class="QComboBox" name="comboBox_user_personalEdit_role">
                       <item>
                        <property name="text">
                         <string>Staff</string>
@@ -1155,10 +1173,20 @@ li.checked::marker { content: &quot;\2612&quot;; }
                       </item>
                      </widget>
                     </item>
+                    <item row="1" column="0">
+                     <widget class="QLabel" name="label_38">
+                      <property name="text">
+                       <string>Username:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="2">
+                     <widget class="QLineEdit" name="lineEdit_user_personalEdit_username"/>
+                    </item>
                    </layout>
                   </item>
                   <item>
-                   <widget class="QPushButton" name="button_user_edit_2">
+                   <widget class="QPushButton" name="button_user_personalEdit">
                     <property name="text">
                      <string>Edit</string>
                     </property>
@@ -1263,7 +1291,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
      <x>0</x>
      <y>0</y>
      <width>887</width>
-     <height>37</height>
+     <height>24</height>
     </rect>
    </property>
   </widget>

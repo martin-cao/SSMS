@@ -58,7 +58,23 @@ void SSMS_UI::refreshSellingSummary() {
 }
 
 void SSMS_UI::refreshAccountsTable() {
-    // 更新账户列表 to-be-done
+    QSqlQuery query;
+    query.prepare("SELECT user_uid, user_name, user_role FROM users");
+    if (!query.exec()) {
+        QMessageBox::warning(nullptr, "User table refresh failed", "User table refresh failed.");
+        return;
+    }
+
+//    QSqlQueryModel* model = new QSqlQueryModel;
+//    model->setQuery(std::move(query));
+
+    queryTable->setTable("users");
+    queryTable->select();
+    queryTable->setQuery(query);
+
+    ui->tableView_user_userTable->setModel(queryTable);
+    ui->tableView_user_userTable->resizeColumnsToContents();
+    ui->tableView_user_userTable->show();
 }
 // endregion
 
@@ -82,6 +98,8 @@ void SSMS_UI::on_button_login_clicked() {
 void SSMS_UI::on_button_logOut_clicked() {
     ui->lineEdit_login_username->clear();
     ui->lineEdit_login_password->clear();
+    ui->stackedWidget_user->setCurrentIndex(1);
+    ui->tabWidget->setCurrentIndex(0);
     ui->stackedWidget_main->setCurrentIndex(1);
 }
 
@@ -115,6 +133,7 @@ void SSMS_UI::on_tabWidget_currentChanged() {
             break;
         case 4:
             qDebug() << "[SSMS_SYSTEM_VIEW] Turned to tab User";
+            refreshAccountsTable();
             break;
         default:
             break;
@@ -429,7 +448,7 @@ void SSMS_UI::on_button_stock_delete_delete_clicked() {
 
     // Check if any row is selected
     if (row == -1) {
-        QMessageBox::warning(nullptr, "Deletion failed", "Please select one line first.");
+        QMessageBox::warning(nullptr, "Deletion failed", "Please select one row first.");
         return;
     }
 
@@ -650,8 +669,269 @@ void SSMS_UI::on_button_user_switchToPersonalMode_clicked() {
 }
 
 void SSMS_UI::on_button_user_switchToAdminMode_clicked() {
+    if (user.get_userRole_int() != 1) {
+        QMessageBox::warning(nullptr, "Permission Denied", "Permission denied. Only admin can switch to admin mode.");
+        return;
+    }
     ui->stackedWidget_user->setCurrentIndex(0);
 }
+
+void SSMS_UI::on_lineEdit_user_personalEdit_uid_textChanged(const QString &uid) {
+    QSqlQuery query;
+    query.prepare("SELECT user_name, user_role FROM users WHERE user_uid = :uid");
+    query.bindValue(":uid", uid);
+    if (!query.exec()) {
+        qDebug() << "Query execution failed: " << query.lastError().text();
+        return;
+    }
+
+    if (query.next()) {
+        QString userName = query.value("user_name").toString();
+        int userRole = query.value("user_role").toInt();
+        QString roleList[] = {"Administrator", "Manager", "Staff"};
+
+        ui->lineEdit_user_personalEdit_username->setText(userName);
+        ui->comboBox_user_personalEdit_role->setCurrentText(roleList[userRole - 1]);
+    } else {
+        ui->lineEdit_user_personalEdit_username->clear();
+        ui->comboBox_user_personalEdit_role->setCurrentIndex(-1);
+    }
+}
+
+void SSMS_UI::on_button_user_personalEdit_clicked() {
+    int uid = ui->lineEdit_user_personalEdit_uid->text().toInt();
+    QString userName = ui->lineEdit_user_personalEdit_username->text();
+    QByteArray oldPwdHash = QCryptographicHash::hash(ui->lineEdit_user_personalEdit_password_old->text().toUtf8(), QCryptographicHash::Sha256).toHex();
+    QString oldPwdHashStr = QString::fromUtf8(oldPwdHash);
+    QByteArray pwdHash = QCryptographicHash::hash(ui->lineEdit_user_personalEdit_password_new->text().toUtf8(), QCryptographicHash::Sha256).toHex();
+    QString pwdHashStr = QString::fromUtf8(pwdHash);
+    QByteArray pwdHashAgain = QCryptographicHash::hash(ui->lineEdit_user_personalEdit_password_new_again->text().toUtf8(), QCryptographicHash::Sha256).toHex();
+    QString pwdHashAgainStr = QString::fromUtf8(pwdHashAgain);
+    int role;
+    switch (ui->comboBox_user_personalEdit_role->currentIndex()) {
+        case 0:
+            role = 3;
+            break;
+        case 1:
+            role = 1;
+            break;
+        case 2:
+            role = 2;
+            break;
+        default:
+            QMessageBox::warning(nullptr, "Role set error", "Role set error");
+            return;
+    }
+
+    // Check whether the old password is correct
+    QSqlQuery queryCheck;
+    queryCheck.prepare("SELECT user_pwd FROM users WHERE user_uid = :uid");
+    queryCheck.bindValue(":uid", uid);
+    queryCheck.exec();
+
+    if (queryCheck.next()) {
+        QString storedPwdHashStr = queryCheck.value("user_pwd").toString();
+        if (oldPwdHashStr != storedPwdHashStr) {
+            qDebug() << "[DEBUG] stored pwd: " << storedPwdHashStr << "\ninput old pwd: " << oldPwdHashStr;
+            QMessageBox::warning(nullptr, "Password error", "Old password is incorrect.");
+            return;
+        }
+    } else {
+        QMessageBox::warning(nullptr, "User error", "User does not exist.");
+        return;
+    }
+
+    // Do the modification
+    QSqlQuery query;
+    query.prepare("UPDATE users SET user_name = :userName, user_pwd = :pwd, user_role = :role WHERE user_uid = :uid");
+    query.bindValue(":userName", userName);
+    query.bindValue(":pwd", pwdHashStr);
+    query.bindValue(":role", role);
+    query.bindValue(":uid", uid);
+
+    qDebug() << "Executing query: " << query.executedQuery();
+    query.exec();
+
+    if (query.numRowsAffected() > 0) {
+        QMessageBox::information(nullptr, "Edit succeed", "Edit succeed.");
+    } else {
+        qDebug() << "Query error: " << query.lastError().text();
+        QMessageBox::warning(nullptr, "Edit failed", "Edit failed.");
+    }
+
+    refreshAccountsTable();
+}
+
+void SSMS_UI::on_tableView_user_userTable_clicked(const QModelIndex &index) {
+    int row = index.row();
+
+    QString uid = ui->tableView_user_userTable->model()->data(ui->tableView_user_userTable->model()->index(row, 0)).toString();
+    QString userName = ui->tableView_user_userTable->model()->data(ui->tableView_user_userTable->model()->index(row, 1)).toString();
+    int role = ui->tableView_user_userTable->model()->data(ui->tableView_user_userTable->model()->index(row, 2)).toInt();
+    QString roleList[] = {"Administrator", "Manager", "Staff"};
+
+    ui->lineEdit_user_edit_uid->setText(uid);
+    ui->lineEdit_user_edit_username->setText(userName);
+    ui->comboBox_user_edit_role->setCurrentText(roleList[role - 1]);
+}
+
+void SSMS_UI::on_button_user_add_clicked() {
+    QString userName = ui->lineEdit_user_add_username->text();
+    QByteArray pwdHash = QCryptographicHash::hash(ui->lineEdit_user_add_password->text().toUtf8(), QCryptographicHash::Sha256).toHex();
+    QString pwdHashStr = QString::fromUtf8(pwdHash);
+    QByteArray pwdHashAgain = QCryptographicHash::hash(ui->lineEdit_user_add_password_again->text().toUtf8(), QCryptographicHash::Sha256).toHex();
+    QString pwdHashAgainStr = QString::fromUtf8(pwdHash);
+    int role;
+    switch (ui->comboBox_user_add_role->currentIndex()) {
+        case 0:
+            role = 3;
+            break;
+        case 1:
+            role = 1;
+            break;
+        case 2:
+            role = 2;
+            break;
+        default:
+            QMessageBox::warning(nullptr, "Role set error", "Role set error");
+            return;
+    }
+
+    // Check if the passwords inputted are same
+    if (pwdHashStr != pwdHashAgainStr) {
+        QMessageBox::warning(nullptr, "Passwords don't match", "Passwords don't match. Please check your input.");
+        return;
+    }
+
+    // Check whether userName exists
+    QSqlQuery queryCheck;
+    queryCheck.prepare("SELECT * FROM users WHERE user_name = :userName");
+    queryCheck.bindValue(":userName", userName);
+    queryCheck.exec();
+
+    if (queryCheck.next()) {
+        QMessageBox::warning(nullptr, "Add user failed", "Add user failed. Username already exists");
+        return;
+    }
+
+    QSqlQuery query;
+    query.prepare("INSERT INTO users (user_name, user_role, user_pwd) VALUES (:userName, :role, :pwd)");
+    query.bindValue(":userName", userName);
+    query.bindValue(":role", role);
+    query.bindValue(":pwd", pwdHashStr);
+    query.exec();
+
+    if (query.numRowsAffected() > 0) {
+        QMessageBox::information(nullptr, "Addition succeed", "Adding user succeed.");
+    } else {
+        QMessageBox::warning(nullptr, "Addition failed", "Adding user failed.");
+    }
+
+    refreshAccountsTable();
+}
+
+void SSMS_UI::on_button_user_edit_clicked() {
+    int uid = ui->lineEdit_user_edit_uid->text().toInt();
+    QString userName = ui->lineEdit_user_edit_username->text();
+    QByteArray oldPwdHash = QCryptographicHash::hash(ui->lineEdit_user_edit_password_old->text().toUtf8(), QCryptographicHash::Sha256).toHex();
+    QString oldPwdHashStr = QString::fromUtf8(oldPwdHash);
+    QByteArray pwdHash = QCryptographicHash::hash(ui->lineEdit_user_edit_password_new->text().toUtf8(), QCryptographicHash::Sha256).toHex();
+    QString pwdHashStr = QString::fromUtf8(pwdHash);
+    QByteArray pwdHashAgain = QCryptographicHash::hash(ui->lineEdit_user_edit_password_new_again->text().toUtf8(), QCryptographicHash::Sha256).toHex();
+    QString pwdHashAgainStr = QString::fromUtf8(pwdHashAgain);
+    int role;
+    switch (ui->comboBox_user_edit_role->currentIndex()) {
+        case 0:
+            role = 3;
+            break;
+        case 1:
+            role = 1;
+            break;
+        case 2:
+            role = 2;
+            break;
+        default:
+            QMessageBox::warning(nullptr, "Role set error", "Role set error");
+            return;
+    }
+
+    // Check whether the old password is correct
+    QSqlQuery queryCheck;
+    queryCheck.prepare("SELECT user_pwd FROM users WHERE user_uid = :uid");
+    queryCheck.bindValue(":uid", uid);
+    queryCheck.exec();
+
+    if (queryCheck.next()) {
+        QString storedPwdHashStr = queryCheck.value("user_pwd").toString();
+        if (oldPwdHashStr != storedPwdHashStr) {
+            qDebug() << "[DEBUG] stored pwd: " << storedPwdHashStr << "\ninput old pwd: " << oldPwdHashStr;
+            QMessageBox::warning(nullptr, "Password error", "Old password is incorrect.");
+            return;
+        }
+    } else {
+        QMessageBox::warning(nullptr, "User error", "User does not exist.");
+        return;
+    }
+
+    // Do the modification
+    QSqlQuery query;
+    query.prepare("UPDATE users SET user_name = :userName, user_pwd = :pwd, user_role = :role WHERE user_uid = :uid");
+    query.bindValue(":userName", userName);
+    query.bindValue(":pwd", pwdHashStr);
+    query.bindValue(":role", role);
+    query.bindValue(":uid", uid);
+
+    qDebug() << "Executing query: " << query.executedQuery();
+    query.exec();
+
+    if (query.numRowsAffected() > 0) {
+        QMessageBox::information(nullptr, "Edit succeed", "Edit succeed.");
+    } else {
+        qDebug() << "Query error: " << query.lastError().text();
+        QMessageBox::warning(nullptr, "Edit failed", "Edit failed.");
+    }
+
+    refreshAccountsTable();
+}
+
+void SSMS_UI::on_button_user_delete_clicked() {
+    QSqlDatabase::database().transaction();  // Start a transaction
+    int row = ui->tableView_user_userTable->currentIndex().row();
+
+    // Check if any row is selected
+    if (row == -1) {
+        QMessageBox::warning(nullptr, "Deletion failed", "Please select one row first.");
+        return;
+    }
+
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Delete confirmation", "Are you sure you want to delete this user?", QMessageBox::Cancel | QMessageBox::Yes, QMessageBox::Cancel);
+    qDebug() << "Reply: " << reply;
+
+    if (reply == QMessageBox::Yes) {
+        qDebug() << "Removing row: " << row;
+        if (!queryTable->removeRow(row)) {
+            qDebug() << "Error removing row: " << queryTable->lastError().text();
+            QSqlDatabase::database().rollback();  // Rollback the transaction
+            QMessageBox::warning(nullptr, "Deletion failed", "Failed to remove the row.");
+            return;
+        }
+        qDebug() << "Row removed successfully";
+
+        if (!queryTable->submitAll()) {
+            qDebug() << "Error submitting changes: " << queryTable->lastError().text();
+            QSqlDatabase::database().rollback();  // Rollback the transaction
+            QMessageBox::warning(nullptr, "Deletion failed", "Failed to submit changes.");
+            return;
+        }
+
+        QSqlDatabase::database().commit();  // Commit the transaction
+        QMessageBox::information(nullptr, "Deletion succeed", "Deleting goods succeed.");
+
+        refreshAccountsTable();
+    }
+}
+
 // endregion
 
 
