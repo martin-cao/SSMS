@@ -112,7 +112,7 @@
            <bool>true</bool>
           </property>
           <property name="currentIndex">
-           <number>4</number>
+           <number>0</number>
           </property>
           <property name="movable">
            <bool>false</bool>
@@ -415,7 +415,7 @@
                  <x>0</x>
                  <y>0</y>
                  <width>200</width>
-                 <height>428</height>
+                 <height>415</height>
                 </rect>
                </property>
                <attribute name="label">
@@ -1291,7 +1291,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
      <x>0</x>
      <y>0</y>
      <width>887</width>
-     <height>24</height>
+     <height>37</height>
     </rect>
    </property>
   </widget>
