@@ -301,6 +301,8 @@ void SSMS_UI::on_button_selling_checkOut_clicked() {
 
     // Reset the shopping cart
     ui->textBrowser_selling_summary->clear();
+    ui->lineEdit_selling_search->clear();
+    on_button_selling_search_clicked();
     transaction.reset();
 
     qDebug() << "on_button_selling_checkOut_clicked() finished.";

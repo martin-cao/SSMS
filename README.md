@@ -3,7 +3,7 @@
 > [!NOTE]
 > This is a course project of Object-Oriented Programming (C++) from Tianjin University of Science and Technology
 
-This app is still in early development.
+This app's development is partly over.
 
 Currently features below are available:
 
@@ -20,6 +20,9 @@ Currently features below are available:
 - - Statistics (4 views)
 - User management
 - - Log in and Log out
+- - Add user
+- - Edit user
+- - Delete user
 
 > [!WARNING]
 > As it is a course assignment project, please DO NOT pull request! If you have any suggestion about this project, please create an issue.
