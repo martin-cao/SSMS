@@ -1,4 +1,4 @@
-# SSMS –– A Qt-based Supermarket Selling Managing System
+# SSMS –– A Qt-based Supermarket Sales Management System
 
 > [!NOTE]
 > This is a course project of Object-Oriented Programming (C++) from Tianjin University of Science and Technology
